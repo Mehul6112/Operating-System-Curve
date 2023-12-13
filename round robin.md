@@ -1,100 +1,158 @@
-    #include <stdio.h>
-    #include <stdlib.h>
-    
-    // Process structure
-    typedef struct Process {
-      int pid; // Process ID
-      int burstTime; // Burst time
-      int arrivalTime; // Arrival time
-      int waitTime; // Waiting time
-      int turnaroundTime; // Turnaround time
-    } Process;
-    
-    // Function to compare arrival times
-    int compareArrivalTime(const void* a, const void* b) {
-      const Process* processA = (const Process*)a;
-      const Process* processB = (const Process*)b;
-      return processA->arrivalTime - processB->arrivalTime;
-    }
-    
-    // Round Robin algorithm
-    void roundRobin(Process processes[], int n, int quantum) {
-      int time = 0; // Current time
-      int completed = 0; // Number of completed processes
-    
-      // Create a queue to hold processes
-      Process queue[n];
-      int front = 0, rear = 0;
-    
-      // Sort processes by arrival time
-      qsort(processes, n, sizeof(Process), compareArrivalTime);
-    
-      // Main loop
-      while (completed != n) {
-        // Add processes that have arrived to the queue
-        for (int i = 0; i < n; ++i) {
-          if (processes[i].arrivalTime <= time && !processes[i].turnaroundTime) {
-            queue[rear] = processes[i];
-            rear = (rear + 1) % n;
-          }
+        #include<stdio.h>
+        #include<limits.h>
+        #include<stdbool.h>
+        
+        struct P{
+        int AT,BT,ST[20],WT,FT,TAT,pos;
+        };
+        
+        int quant;
+        int main(){
+        int n,i,j;
+        // Taking Input
+        printf("Enter the no. of processes :");
+        scanf("%d",&n);
+        struct P p[n];
+        
+        printf("Enter the quantum \n");
+        scanf("%d",&quant);
+        
+        printf("Enter the process numbers \n");
+        for(i=0;i<n;i++)
+        scanf("%d",&(p[i].pos));
+        
+        printf("Enter the Arrival time of processes \n");
+        for(i=0;i<n;i++)
+        scanf("%d",&(p[i].AT));
+        
+        printf("Enter the Burst time of processes \n");
+        for(i=0;i<n;i++)
+        scanf("%d",&(p[i].BT));
+        
+        
+        
+        // Declaring variables
+        int c=n,s[n][20];
+        float time=0,mini=INT_MAX,b[n],a[n];
+        
+        // Initializing burst and arrival time arrays
+        int index=-1;
+        for(i=0;i<n;i++){
+        		b[i]=p[i].BT;
+        		a[i]=p[i].AT;
+        		for(j=0;j<20;j++){
+        		s[i][j]=-1;
+        		}
         }
-    
-        // Process the process at the front of the queue
-        if (queue[front].burstTime > quantum) {
-          time += quantum;
-          queue[front].burstTime -= quantum;
-        } else {
-          time += queue[front].burstTime;
-          queue[front].turnaroundTime = time - queue[front].arrivalTime;
-          queue[front].waitTime = queue[front].turnaroundTime - queue[front].burstTime;
-          completed++;
-          front = (front + 1) % n;
+        
+        int tot_wt,tot_tat;
+        tot_wt=0;
+        tot_tat=0;
+        bool flag=false;
+        
+        while(c!=0){
+        
+        mini=INT_MAX;
+        flag=false;
+        
+        for(i=0;i<n;i++){
+        		float p=time+0.1;
+        		if(a[i]<=p && mini>a[i] && b[i]>0){
+        		index=i;
+        		mini=a[i];
+        		flag=true;
+        		
+        		}
         }
-      }
-    
-      // Calculate average waiting and turnaround times
-      float avgWaitTime = 0.0, avgTurnaroundTime = 0.0;
-      for (int i = 0; i < n; ++i) {
-        avgWaitTime += queue[i].waitTime;
-        avgTurnaroundTime += queue[i].turnaroundTime;
-      }
-      avgWaitTime /= n;
-      avgTurnaroundTime /= n;
-    
-      // Display results
-      printf("Process ID\tBurst Time\tArrival Time\tWait Time\tTurnaround Time\n");
-      for (int i = 0; i < n; ++i) {
-        printf("%d\t\t%d\t\t%d\t\t%d\t\t%d\n", queue[i].pid, queue[i].burstTime, queue[i].arrivalTime,
-             queue[i].waitTime, queue[i].turnaroundTime);
-      }
-      printf("\nAverage waiting time: %.2f\nAverage turnaround time: %.2f\n", avgWaitTime, avgTurnaroundTime);
-    }
-    
-    int main() {
-      // Process data
-      int n; // Number of processes
-      int quantum; // Time quantum
-    
-      printf("Enter number of processes: ");
-      scanf("%d", &n);
-    
-      printf("Enter process details (pid, burst time, arrival time):\n");
-      Process processes[n];
-      for (int i = 0; i < n; ++i) {
-        scanf("%d %d %d", &processes[i].pid, &processes[i].burstTime, &processes[i].arrivalTime);
-      }
-    
-      printf("Enter time quantum: ");
-      scanf("%d", &quantum);
-    
-      // Execute Round Robin algorithm
-      roundRobin(processes, n, quantum);
-    
-      return 0;
-    }
-  ![image](https://github.com/Mehul6112/Operating-System-Curve/assets/119481480/6310c6a4-014f-4aff-b7a8-acd6563217b5)
-  ![image](https://github.com/Mehul6112/Operating-System-Curve/assets/119481480/24de2e80-d671-4d20-b903-3e5dc8e9ed95)
-  ![image](https://github.com/Mehul6112/Operating-System-Curve/assets/119481480/3528d2a8-cb10-4aa1-b1d4-8a6ce0b175c0)
-
-
-
+        // if at =1 then loop gets out hence set flag to false
+        if(!flag){
+        		time++;
+        		continue;
+        }
+        
+        //calculating start time
+        j=0;
+        
+        while(s[index][j]!=-1){
+        j++;
+        }
+        
+        if(s[index][j]==-1){
+        s[index][j]=time;
+        p[index].ST[j]=time;
+        }
+        
+        if(b[index]<=quant){
+        time+=b[index];
+        b[index]=0;
+        }
+        else{
+        time+=quant;
+        b[index]-=quant;
+        }
+        
+        if(b[index]>0){
+        a[index]=time+0.1;
+        }
+        
+        // calculating arrival,burst,final times
+        if(b[index]==0){
+        c--;
+        p[index].FT=time;
+        p[index].WT=p[index].FT-p[index].AT-p[index].BT;
+        tot_wt+=p[index].WT;
+        p[index].TAT=p[index].BT+p[index].WT;
+        tot_tat+=p[index].TAT;
+        
+        }
+        
+        } // end of while loop
+        
+        // Printing output
+        printf("Process number ");
+        printf("Arrival time ");
+        printf("Burst time ");
+        printf("\tStart time");
+        j=0;
+        while(j!=10){
+        j+=1;
+        printf(" ");
+        }
+        printf("\t\tFinal time");
+        printf("\tWait Time ");
+        printf("\tTurnAround Time \n");
+        
+        
+        for(i=0;i<n;i++){
+        printf("%d \t\t",p[i].pos);
+        printf("%d \t\t",p[i].AT);
+        printf("%d \t",p[i].BT);
+        j=0;
+        int v=0;
+        while(s[i][j]!=-1){
+        printf("%d ",p[i].ST[j]);
+        j++;
+        v+=3;
+        }
+        while(v!=40){
+        printf(" ");
+        v+=1;
+        }
+        printf("%d \t\t",p[i].FT);
+        printf("%d \t\t",p[i].WT);
+        printf("%d \n",p[i].TAT);
+        
+        }
+        
+        //Calculating average wait time and turnaround time
+        double avg_wt,avg_tat;
+        avg_wt=tot_wt/(float)n;
+        avg_tat=tot_tat/(float)n;
+        
+        //Printing average wait time and turnaround time
+        printf("The average wait time is : %lf\n",avg_wt);
+        printf("The average TurnAround time is : %lf\n",avg_tat);
+        
+        return 0;
+        }
+![image](https://github.com/Mehul6112/Operating-System-Curve/assets/119481480/59cbc522-e999-4726-856f-c822da9ec959)
