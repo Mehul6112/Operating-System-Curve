@@ -20,6 +20,23 @@ Once the child process has been created, The child process and the parent proces
             return 0;
         }
         // fork() is used 3 times: therefore printf will be executed 8 times
-getpid() is used to get the process ID
-getppid() is used to get the parent process id
+   
 
+   
+    1. getpid() is used to get the process ID
+    2. getppid() is used to get the parent process id
+
+      when parent and child runs same program and same code:
+   
+       // same program same code
+       include <iostream>
+       include <unistd.h>
+       using namespace std;
+       int main(){
+       pid_t pid;
+       pid =fork();
+       if (pid<O){cout <<"error"<<endl;}
+       else{cout<<"HELLO WORLD" <<endl;}
+       return 0;}
+   
+       
