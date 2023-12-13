@@ -1,12 +1,15 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <stdbool.h>
+    #include <limits.h>
     
     typedef struct Process {
       int pid; // process ID
       int arrival_time; // arrival time
       int burst_time; // burst time
       int remaining_time; // remaining burst time
+      int waiting_time; // waiting time
+      int turnaround_time; // turnaround time
       bool completed; // process completion flag
     } Process;
     
@@ -66,13 +69,9 @@
         if (processes[shortest_process_index].remaining_time == 0) {
           processes[shortest_process_index].completed = true;
           completed_processes++;
+          processes[shortest_process_index].turnaround_time = current_time - processes[shortest_process_index].arrival_time;
+          processes[shortest_process_index].waiting_time = processes[shortest_process_index].turnaround_time - processes[shortest_process_index].burst_time;
         }
-      }
-    
-      // Calculate waiting and turnaround times
-      for (int i = 0; i < number_of_processes; i++) {
-        processes[i].waiting_time = processes[i].turnaround_time - processes[i].burst_time;
-        processes[i].turnaround_time = current_time - processes[i].arrival_time;
       }
     
       // Display process details
@@ -88,6 +87,7 @@
     
       return 0;
     }
+
 ![image](https://github.com/Mehul6112/Operating-System-Curve/assets/119481480/694513e0-2f8a-4961-ab5c-a8d0c1ef9dc6)
 ![image](https://github.com/Mehul6112/Operating-System-Curve/assets/119481480/60bc5f18-1c79-4e66-8260-6869763a5fbb)
 ![image](https://github.com/Mehul6112/Operating-System-Curve/assets/119481480/b201ada8-68a4-4684-b12a-ccba0ed7f2d1)
